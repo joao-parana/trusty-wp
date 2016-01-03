@@ -14,11 +14,13 @@ Providos pelo usuário:
 
     MYSQL_ROOT_PASSWORD
 
-Criando a imagem:
+## Criando a imagem:
 
-    echo "# " >> conf/smtp/.GMAILRC
+    # echo "# " >> conf/smtp/.GMAILRC
+    touch conf/smtp/.GMAILRC
+    ./build-trusty-wp
 
-Rodando o contêiner:
+## Rodando o contêiner:
 
     docker run -d -e MYSQL_ROOT_PASSWORD="xpto" \
                --name mysql-server-01 mariadb
@@ -39,4 +41,18 @@ Terminal e executar o comando:
 Com isso você poderá executar comandos tais como:
 
     cat /var/log/apache2/error.log
+
+## Configurando o SMTP Server para envio de mensagens de e-mail
+
+### Passo a passo da configuração do Servidor de e-mail
+
+* Corrigir o conteúdo do arquivo `conf/smtp/.GMAILRC`
+* Alterar o arquivo `conf/smtp/.msmtprc`
+* Alterar o arquivo `conf/smtp/.muttrc` de acordo com suas necessidades específicas
+* Recriar a imagem executando a shell `./build-trusty-wp`
+
+**Cuidado:** Estes arquivos possuem valores associados a **credenciais de acesso** 
+(servidor SMTP, usuário, senha, etc) que devem ser protgidos e não devem ficar 
+seu Sistema de Controle de Versão, por isso adicione este tipo de informação
+apenas em arquivos listados no `.gitignore`
 
