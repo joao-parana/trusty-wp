@@ -31,7 +31,6 @@ Premissa: Arquivo `conf/smtp/.GMAILRC` deve existir e contêm as credenciais da 
 
 Agora faça o build:
 
-    touch conf/php/php.ini # Executar apenas uma vez
     ./build-trusty-wp
 
 ## Rodando o contêiner
@@ -82,12 +81,15 @@ ou como Issue aqui no projeto do Github.
 * Conferir o conteúdo original do arquivo `/etc/ssmtp/ssmtp.conf`
 * Alterar o arquivo `conf/smtp/.GMAILRC` no computador host
 * Recriar a imagem executando a shell `./build-trusty-wp`
+* Acertar a configuração da conta no GMail (veja imagem abaixo)
 
 **Cuidado:** O arquivo `conf/smtp/.GMAILRC` possue valores associados as 
 **credenciais de acesso** (servidor SMTP, usuário, senha, etc) que devem 
 ser protgidos e não devem ficar no seu Sistema de Controle de Versão, 
 por isso adicione este tipo de informação apenas em arquivos listados 
 no `.gitignore`
+
+![Acertando a configuração da conta no GMail](https://raw.githubusercontent.com/joao-parana/trusty-wp/master/docs/images/gmail_login_e_segurança.png)
 
 #### O arquivo /etc/ssmtp/ssmtp.conf
 
@@ -138,7 +140,9 @@ desenvolvendo.
                -p 80:80 \
                parana/trusty-wp
 
-# Plugins and themes customization
-VOLUME ["/app/custom"]
-RUN mkdir -p /app/custom/plugins
-RUN mkdir -p /app/custom/themes
+O comando docker exec pode ser usado para inspecionar o contêiner
+
+    docker exec -i -t wp-4.4 bash
+    
+    ls -lAt /app/custom/plugins
+    ls -lAt /app/custom/themes

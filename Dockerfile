@@ -2,7 +2,7 @@ FROM parana/trusty-php
 
 MAINTAINER João Antonio Ferreira "joao.parana@gmail.com"
 
-ENV REFRESHED_AT 2016-01-03
+ENV REFRESHED_AT 2016-01-04
 
 # Install packages
 RUN apt-get update && \
