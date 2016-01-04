@@ -1,5 +1,9 @@
 # trusty-wp
 
+> This is a Docker image for Wordpress 4.4 on Ubuntu 14.04 with SMTP support
+
+**Documentation in Brazilian Portuguese**
+
 Implementa Wordpress baseando se na Imagem parana/trusty-php
 
 Assume nome de database `wordpress`, usuário `root` no MySQL 
@@ -16,20 +20,40 @@ Providos pelo usuário:
 
 ## Criando a imagem:
 
-    # echo "# " >> conf/smtp/.GMAILRC
-    touch conf/smtp/.GMAILRC
+Premissa: Arquivo `conf/smtp/.GMAILRC` deve existir e contêm as credenciais da sua conta GMail
+
+    cat conf/smtp/.GMAILRC
+
+    AuthUser=sua-conta-no-gmail
+    AuthPass=sua-senha-no-gmail
+    FromLineOverride=YES
+    UseTLS=YES
+
+Agora faça o build:
+
+    touch conf/php/php.ini # Executar apenas uma vez
     ./build-trusty-wp
 
-## Rodando o contêiner:
+## Rodando o contêiner
+
+Precisamos de um contêiner com Database MySQL. Uma ótima opção
+é a imagem oficial **mariadb** disponível em 
+[https://hub.docker.com/r/library/mariadb/](https://hub.docker.com/r/library/mariadb/)
+
+Usaremos aqui a versão 10.1.10
 
     docker run -d -e MYSQL_ROOT_PASSWORD="xpto" \
-               --name mysql-server-01 mariadb
+               --name mysql-server-01 mariadb:10.1.10
     docker logs mysql-server-01
+    docker ps -a  | grep mysql-server-01
     docker run -i -t --name wp-4.4 --rm \
                --link mysql-server-01:mysql \
                -e MYSQL_ROOT_PASSWORD="xpto" \
+               -e GMAIL_ACCOUNT=sua-conta-no-gmail \
                -p 80:80 \
                parana/trusty-wp
+
+    # Subistitua sua-conta-no-gmail pelo se ID. No meu caso é **joao.parana**
 
 Observe que o terminal fica bloqueado na console do Ubuntu 14.04
 
@@ -41,18 +65,80 @@ Terminal e executar o comando:
 Com isso você poderá executar comandos tais como:
 
     cat /var/log/apache2/error.log
+    cat /etc/ssmtp/ssmtp.conf
 
-## Configurando o SMTP Server para envio de mensagens de e-mail
+## Configurando o SMTP Server para envio de mensagens de e-mail usando o **ssmtp**
+
+Como dizem os norte americanos, **SMTP Sucks !** 
+
+Procurei simplificar bastante o processo criando código específico 
+no Dockerfile e na shell `run-wp` para resolver o problema da forma 
+mais elegante. Aceito suestões de melhorias no meu blog
+[http://joao-parana.com.br/blog/](http://joao-parana.com.br/blog/) 
+ou como Issue aqui no projeto do Github.
 
 ### Passo a passo da configuração do Servidor de e-mail
 
-* Corrigir o conteúdo do arquivo `conf/smtp/.GMAILRC`
-* Alterar o arquivo `conf/smtp/.msmtprc`
-* Alterar o arquivo `conf/smtp/.muttrc` de acordo com suas necessidades específicas
+* Conferir o conteúdo original do arquivo `/etc/ssmtp/ssmtp.conf`
+* Alterar o arquivo `conf/smtp/.GMAILRC` no computador host
 * Recriar a imagem executando a shell `./build-trusty-wp`
 
-**Cuidado:** Estes arquivos possuem valores associados a **credenciais de acesso** 
-(servidor SMTP, usuário, senha, etc) que devem ser protgidos e não devem ficar 
-seu Sistema de Controle de Versão, por isso adicione este tipo de informação
-apenas em arquivos listados no `.gitignore`
+**Cuidado:** O arquivo `conf/smtp/.GMAILRC` possue valores associados as 
+**credenciais de acesso** (servidor SMTP, usuário, senha, etc) que devem 
+ser protgidos e não devem ficar no seu Sistema de Controle de Versão, 
+por isso adicione este tipo de informação apenas em arquivos listados 
+no `.gitignore`
 
+#### O arquivo /etc/ssmtp/ssmtp.conf
+
+A versão final dentro do contêiner deve parecer com isso abaixo:
+
+    cat /etc/ssmtp/ssmtp.conf
+
+    #
+    # Config file for sSMTP sendmail
+    #
+    # The person who gets all mail for userids < 1000
+    # Make this empty to disable rewriting.
+    # root=postmaster
+    root=sua-conta-no-gmail@gmail.com
+
+    # The place where the mail goes. The actual machine name is required no 
+    # MX records are consulted. Commonly mailhosts are named mail.domain.com
+    mailhub=smtp.gmail.com:465
+
+    # Where will the mail seem to come from?
+    rewriteDomain=gmail.com
+
+    # The full hostname
+    hostname=seu-nome-de-host
+
+    # Are users allowed to set their own From: address?
+    # YES - Allow the user to specify their own From: address
+    # NO - Use the system generated From: address
+    #FromLineOverride=YES
+
+    AuthUser=sua-conta-no-gmail
+    AuthPass=sua-senha-no-gmail
+    FromLineOverride=YES
+    UseTLS=YES
+
+
+## Volumes para Plugins e Temas adicionais **desenvolvidos "em casa"**
+
+Acrescente a opção `-v $PWD/src:/app/custom` ao comando `docker run` para 
+indicar o diretório para Plugins e Temas adicionais que você esteja 
+desenvolvendo.
+
+    docker run -i -t --name wp-4.4 --rm \
+               --link mysql-server-01:mysql \
+               -e MYSQL_ROOT_PASSWORD="xpto" \
+               -e GMAIL_ACCOUNT=sua-conta-no-gmail \
+               -v $PWD/src:/app/custom \ 
+               -p 80:80 \
+               parana/trusty-wp
+
+# Plugins and themes customization
+VOLUME ["/app/custom"]
+RUN mkdir -p /app/custom/plugins
+RUN mkdir -p /app/custom/themes

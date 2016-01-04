@@ -1,2 +1,3 @@
 conf/smtp/.GMAILRC
+conf/smtp/container-started-message.txt
 *.log
