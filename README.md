@@ -66,7 +66,9 @@ Com isso você poderá executar comandos tais como:
     cat /var/log/apache2/error.log
     cat /etc/ssmtp/ssmtp.conf
 
-## Configurando o SMTP Server para envio de mensagens de e-mail usando o **ssmtp**
+## Configurando o SMTP Server 
+
+### Envio de mensagens de e-mail usando o **ssmtp** e GMail
 
 Como dizem os norte americanos, **SMTP Sucks !** 
 
@@ -126,7 +128,7 @@ A versão final dentro do contêiner deve parecer com isso abaixo:
     UseTLS=YES
 
 
-## Volumes para Plugins e Temas adicionais **desenvolvidos "em casa"**
+## Volumes para Plugins e Temas **desenvolvidos "em casa"**
 
 Acrescente a opção `-v $PWD/src:/app/custom` ao comando `docker run` para 
 indicar o diretório para Plugins e Temas adicionais que você esteja 
