@@ -8,6 +8,11 @@ then
   echo "••• `date` - Skipped sSMTP configuration. SMTP is ready !"
 else
   echo "••• `date` - Configuring SMTP to send e-mail using GMail Account"
+  # Merging my .GMAILRC into ssmtp.conf file
+  if [[ -f "/root/ssmtp/conf/.GMAILRC" ]] ; then
+    # If we have a custom .GMAILRC, append it to ssmtp.conf
+    cat /root/ssmtp/conf/.GMAILRC >> /etc/ssmtp/ssmtp.conf
+  fi
   echo "••• `date` - GMAIL_ACCOUNT=$GMAIL_ACCOUNT"
   echo "••• `date` - FULL_GMAIL_ADDR=$FULL_GMAIL_ADDR"
   # Example of sed inplace command:

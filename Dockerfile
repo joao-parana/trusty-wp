@@ -26,18 +26,13 @@ RUN mkdir -p /root/ssmtp/conf && \
     mkdir -p /root/php/conf && \
     mkdir -p /root/wp/conf
 
-COPY conf/smtp/ssmtp.conf /root/ssmtp/conf/ssmtp.conf
+COPY conf/smtp/* /root/ssmtp/conf/
 COPY conf/php/php.ini /root/php/conf/php.ini
 COPY conf/wp/wp-config-fragment.php /root/wp/conf/wp-config-fragment.php
 
 RUN echo "••• Configuração original do SMTP •••" && \
     cat /etc/ssmtp/ssmtp.conf && \
     echo "•••••••••••••••••••••••••••••••••••••"
-
-# Merging my .GMAILRC into ssmtp.conf file
-COPY conf/smtp/.GMAILRC /root/ssmtp/conf
-RUN cat /root/ssmtp/conf/.GMAILRC >> /etc/ssmtp/ssmtp.conf
-COPY conf/smtp/container-started-message.txt /root/ssmtp/conf
 
 # If you prefer you can add wp-config with info for Wordpress to connect to DB
 # ADD wp-config.php /app/wp-config.php
