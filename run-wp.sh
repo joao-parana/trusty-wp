@@ -78,11 +78,20 @@ then
   RET=1
   while [[ RET -ne 0 ]]; do
     sleep 5
+    echo "••• `date` - Trying create database SQL command"
     mysql -uroot -p$MYSQL_ROOT_PASSWORD -h$MYSQL_PORT_3306_TCP_ADDR \
           -P$MYSQL_PORT_3306_TCP_PORT -e "CREATE DATABASE wordpress"
     RET=$?
   done
   echo "••• `date` - Database wordpress for Wordpress $WP_VERSION was created!"
+  ### echo "••• `date` - Appending defition for WP_CONTENT_DIR for Wordpress"
+  ### # sed -Ei "s/define\('WP_DEBUG', false\);/define\('WP_DEBUG', true\);\n\ndefine\( 'WP_CONTENT_DIR', dirname\(__FILE__\) . 'custom' \);\n/" wp-config-sample.php
+  ### # Removendo as linhas do final do arquivo
+  ### sed -i '82,89d' wp-config-sample.php
+  ### sed -Ei "s/WP_DEBUG', false\);/WP_DEBUG', false\);\n/" wp-config-sample.php
+  ### cat /root/wp/conf/wp-config-fragment.php >> wp-config-sample.php
+  ### # See: https://codex.wordpress.org/Editing_wp-config.php#Moving_wp-content_folder
+  tail -n 20 wp-config-sample.php
 else
   echo "••• `date` - Skipped creation of database wordpress for Wordpress $WP_VERSION – it already exists."
 fi

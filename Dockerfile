@@ -22,9 +22,14 @@ RUN rm -rf /app && mkdir /app && \
 RUN apt-get update && \
     apt-get -y install mailutils mutt nano
 
-RUN mkdir -p /root/ssmtp/conf && mkdir -p/root/php/conf
-COPY conf/smtp/ssmtp.conf /root/ssmtp/conf
+RUN mkdir -p /root/ssmtp/conf && \
+    mkdir -p /root/php/conf && \
+    mkdir -p /root/wp/conf
+
+COPY conf/smtp/ssmtp.conf /root/ssmtp/conf/ssmtp.conf
 COPY conf/php/php.ini /root/php/conf/php.ini
+COPY conf/wp/wp-config-fragment.php /root/wp/conf/wp-config-fragment.php
+
 RUN echo "••• Configuração original do SMTP •••" && \
     cat /etc/ssmtp/ssmtp.conf && \
     echo "•••••••••••••••••••••••••••••••••••••"
@@ -52,6 +57,10 @@ ADD run-wp.sh /run-wp.sh
 RUN chmod 755 /*.sh
 
 WORKDIR /app
+
+# To control the user and group for VOLUME shared folder
+RUN groupadd code_executor -g 1000 && \
+    useradd code_executor -g code_executor -u 1000
 
 # Plugins and themes customization
 VOLUME ["/app/custom"]
