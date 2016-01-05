@@ -65,6 +65,7 @@ Com isso você poderá executar comandos tais como:
 
     cat /var/log/apache2/error.log
     cat /etc/ssmtp/ssmtp.conf
+    cat /var/log/maillog
 
 ## Configurando o SMTP Server 
 

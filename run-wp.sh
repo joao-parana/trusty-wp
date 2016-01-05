@@ -8,7 +8,14 @@ then
   echo "••• `date` - Skipped sSMTP configuration. SMTP is ready !"
 else
   echo "••• `date` - Configuring SMTP to send e-mail using GMail Account"
+  # Create backup of conf file
+  ssmtp_file=/etc/ssmtp/ssmtp.conf
+  backupfile_time=`date +%H%M%S`
+  cp $ssmtp_file $ssmtp_file.$backupfile_time
   # Merging my .GMAILRC into ssmtp.conf file
+  echo "#" >> /etc/ssmtp/ssmtp.conf
+  echo "Debug=YES" >> /etc/ssmtp/ssmtp.conf
+  echo "#" >> /etc/ssmtp/ssmtp.conf
   if [[ -f "/root/ssmtp/conf/.GMAILRC" ]] ; then
     # If we have a custom .GMAILRC, append it to ssmtp.conf
     cat /root/ssmtp/conf/.GMAILRC >> /etc/ssmtp/ssmtp.conf
