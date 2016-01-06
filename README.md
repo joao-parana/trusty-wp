@@ -67,6 +67,27 @@ Com isso você poderá executar comandos tais como:
     cat /etc/ssmtp/ssmtp.conf
     cat /var/log/maillog
 
+### Rodando como Daemon
+
+    docker run -d --name wp-4.4  \
+               --link mysql-server-01:mysql \
+               -e MYSQL_ROOT_PASSWORD="xpto" \
+               -e GMAIL_ACCOUNT=sua-conta-no-gmail \
+               -p 80:80 \
+               parana/trusty-wp
+
+Parando o Contêiner
+
+    docker stop wp-4.4
+
+Reiniciando o Contêiner
+
+    docker start wp-4.4
+
+**OBS:** caso você tenha configura corretamente o sSMTP 
+você receberá uma mensagem a cada vez que o contêiner inicia
+a execução
+
 ## Configurando o SMTP Server 
 
 ### Envio de mensagens de e-mail usando o **ssmtp** e GMail
