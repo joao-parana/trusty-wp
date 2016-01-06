@@ -52,6 +52,7 @@ else
   touch /.ssmtp_configured
 fi
 
+echo "••• `date` - Sending email notification to $FULL_GMAIL_ADDR"
 # I will always send a message when container starts
 cp /root/ssmtp/conf/container-started-message.txt \
    /tmp/container-started-msg.txt
